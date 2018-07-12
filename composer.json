@@ -1,0 +1,12 @@
+{
+    "name": "behram/sokoban",
+    "authors": [
+        {
+            "name": "Behram ÇELEN",
+            "email": "behramcelen@gmail.com"
+        }
+    ],
+    "require": {
+        "nicmart/tree": "^0.2.7"
+    }
+}
