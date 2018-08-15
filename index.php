@@ -165,15 +165,18 @@ class Sokoban
 			return false;
 		}
 		$childNode = new Node($parsedMap);
-		$parentNode->addChild($childNode);
-        $this->counter = $this->counter+1;
+		//$parentNode->addChild($childNode);
 
 		if($this->isFinished($parsedMap)){
 		    $this->lastNode = $childNode;
+		    $this->exposeMap($parsedMap);
+		    exit("hello");
 
 			return true;
 		}
 		$this->triedMaps[] = $parsedMapHash;
+		$this->counter = $this->counter+1;
+		echo $this->counter."<br>";
 
 		$this->moveDirections($childNode);
 
@@ -187,20 +190,46 @@ class Sokoban
 
         $boxes = $this->findBoxes($parsedMap);
         foreach ($boxes as $box){
-            // if up and left is box
-            if($parsedMap[$box[0]-1][$box[1]] == self::_WALL && $parsedMap[$box[0]][$box[1]-1] == self::_WALL){
+            $upVal = $parsedMap[$box[0]-1][$box[1]];
+            $leftVal = $parsedMap[$box[0]][$box[1]-1];
+            $downVal = $parsedMap[$box[0]+1][$box[1]];
+            $rightVal = $parsedMap[$box[0]][$box[1]+1];
+
+            $upLeftCornerVal = $parsedMap[$box[0]-1][$box[1]-1];
+            $upRightCornerVal = $parsedMap[$box[0]-1][$box[1]+1];
+            $downLeftCornerVal = $parsedMap[$box[0]+1][$box[1]-1];
+            $downRightCornerVal = $parsedMap[$box[0]+1][$box[1]+1];
+            // if up and left is wall
+            if($upVal == self::_WALL && $leftVal == self::_WALL){
                 return false;
             }
-            // if up and right is box
-            if($parsedMap[$box[0]-1][$box[1]] == self::_WALL && $parsedMap[$box[0]][$box[1]+1] == self::_WALL){
+            // if up and right is wall
+            if($upVal == self::_WALL && $rightVal == self::_WALL){
                 return false;
             }
-            // if down and left is box
-            if($parsedMap[$box[0]+1][$box[1]] == self::_WALL && $parsedMap[$box[0]][$box[1]-1] == self::_WALL){
+            // if down and left is wall
+            if($downVal == self::_WALL && $leftVal == self::_WALL){
                 return false;
             }
-            // if down and right is box
-            if($parsedMap[$box[0]+1][$box[1]] == self::_WALL && $parsedMap[$box[0]][$box[1]+1] == self::_WALL){
+            // if down and right is wall
+            if($downVal == self::_WALL && $rightVal == self::_WALL){
+                return false;
+            }
+
+            //if up,left and left up corner is box
+            if($upVal == self::_BOX && $leftVal == self::_BOX && $upLeftCornerVal == self::_BOX){
+                return false;
+            }
+            //if up,right and right up corner is box
+            if($upVal == self::_BOX && $rightVal == self::_BOX && $upRightCornerVal == self::_BOX){
+                return false;
+            }
+            //if down,left and left down corner is box
+            if($downVal == self::_BOX && $leftVal == self::_BOX && $downLeftCornerVal == self::_BOX){
+                return false;
+            }
+            //if down,right and right down corner is box
+            if($downVal == self::_BOX && $rightVal == self::_BOX && $downRightCornerVal == self::_BOX){
                 return false;
             }
         }
@@ -374,14 +403,14 @@ $types = [
 ];
 
 $map10 = "
-2 2 2 2 2 2 2 1 1
-2 3 3 6 3 3 2 1 1
-2 3 3 2 3 3 2 1 1
-2 4 6 6 6 4 2 1 1
-2 4 4 6 4 4 2 1 1
-2 4 6 6 6 4 2 1 1
-2 4 4 2 5 4 2 1 1
-2 2 2 2 2 2 2 1 1
+2 2 2 2 2 2 2 2 1
+2 4 4 2 4 4 4 2 1
+2 4 6 3 3 6 4 2 1
+2 5 6 3 7 4 2 2 1
+2 4 6 3 3 6 4 2 1
+2 4 4 2 4 4 4 2 1
+2 2 2 2 2 2 2 2 1
+1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1
 ";
 
@@ -389,8 +418,8 @@ $sokoban = new Sokoban();
 $parsedMap = $sokoban->parseMap($map10);
 $sokoban->tree = new Node($parsedMap);
 $sokoban->tree = $sokoban->move($sokoban->tree, $parsedMap);
-//$sokoban->exposeMap($parsedMap);
+$sokoban->exposeMap($parsedMap);
 //$sokoban->exposeTree($sokoban->tree);
 //var_dump($sokoban->tree->getHeight());
-$sokoban->exposeTreeFromLast($sokoban->lastNode);
+//$sokoban->exposeTreeFromLast($sokoban->lastNode);
 
